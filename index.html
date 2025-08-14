@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wildfire Tank Battle</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <!-- Touch Controls -->
+    <div id="touchControls" class="touch-controls">
+      <div class="dpad-container">
+        <div class="dpad">
+          <button class="dpad-btn up" data-action="up">↑</button>
+          <button class="dpad-btn left" data-action="left">←</button>
+          <button class="dpad-btn center"></button>
+          <button class="dpad-btn right" data-action="right">→</button>
+          <button class="dpad-btn down" data-action="down">↓</button>
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button class="action-btn fire" data-action="fire">FIRE</button>
+      </div>
+    </div>
+
+    <!-- Screen Touch Controls -->
+    <div id="screenTouchControls" class="screen-touch-controls">
+      <div class="touch-zone touch-move-left" data-action="left"></div>
+      <div class="touch-zone touch-move-right" data-action="right"></div>
+      <div class="touch-zone touch-move-up" data-action="up"></div>
+      <div class="touch-zone touch-move-down" data-action="down"></div>
+      <div class="touch-zone touch-fire" data-action="fire"></div>
+    </div>
+
+    <!-- UI Overlay -->
+    <div id="gameUI" class="game-ui">
+      <div class="player-info">
+        <div class="lives">Lives: <span id="lives">3</span></div>
+        <div class="score">Score: <span id="score">0</span></div>
+      </div>
+      <div class="stage-info">
+        <div class="stage">Stage: <span id="stage">1</span></div>
+        <div class="enemies">Enemies: <span id="enemyCount">1</span></div>
+      </div>
+      <div class="touch-toggle">
+        <button id="touchToggleBtn" class="touch-toggle-btn">📱 Screen Touch</button>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="screen hidden">
+      <h2>Game Over</h2>
+      <p>Final Score: <span id="finalScore">0</span></p>
+      <button id="restartBtn">Restart</button>
+    </div>
+
+    <!-- Multiplayer Menu -->
+    <div id="multiplayerMenu" class="multiplayer-menu hidden">
+      <div class="mp-header">
+        <h3>🌐 Multiplayer Co-op (Up to 8 Players)</h3>
+      </div>
+      <div class="mp-buttons">
+        <button id="createRoomBtn" class="mp-btn host-btn">🎮 Create Room</button>
+        <div class="join-section">
+          <input id="roomCodeInput" class="room-input" placeholder="Enter room code" maxlength="15" autocomplete="off" spellcheck="false" />
+          <button id="joinRoomBtn" class="mp-btn join-btn">🔗 Join Room</button>
+        </div>
+      </div>
+      <div id="roomInfo" class="room-info hidden">
+        <div class="room-code">
+          <h4>Room Code: <span id="codeDisplay">LOADING...</span></h4>
+          <button id="copyCodeBtn" class="copy-btn">📋 Copy Code</button>
+        </div>
+        <div class="player-list">
+          <h4>Connected Players (<span id="playerCount">1</span>/8):</h4>
+          <ul id="playerListUL"></ul>
+        </div>
+        <div class="room-controls">
+          <button id="startGameBtn" class="mp-btn start-btn" disabled>🚀 Start Game</button>
+          <button id="leaveRoomBtn" class="mp-btn leave-btn">❌ Leave Room</button>
+        </div>
+      </div>
+      <div id="connectionStatus" class="connection-status">
+        <span id="statusText">Disconnected</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts (DebugSystem removed for release) -->
+  <script src="https://unpkg.com/peerjs@1.5.0/dist/peerjs.min.js"></script>
+  <script src="js/utils/Vector2D.js"></script>
+  <script src="js/utils/GamepadManager.js"></script>
+  <script src="js/utils/AssetLoader.js"></script>
+  <script src="js/utils/SoundManager.js"></script>
+  <script src="js/multiplayer/NetworkManager.js"></script>
+  <script src="js/entities/Entity.js"></script>
+  <script src="js/entities/Tank.js"></script>
+  <script src="js/entities/Player.js"></script>
+  <script src="js/entities/Enemy.js"></script>
+  <script src="js/entities/Bullet.js"></script>
+  <script src="js/entities/PowerUp.js"></script>
+  <script src="js/entities/Base.js"></script>
+  <script src="js/entities/Car.js"></script>
+  <script src="js/systems/InputSystem.js"></script>
+  <script src="js/systems/CollisionSystem.js"></script>
+  <script src="js/systems/RenderSystem.js"></script>
+  <script src="js/systems/FreezeEffect.js"></script>
+  <script src="js/Game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

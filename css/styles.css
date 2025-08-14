@@ -1,0 +1,836 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: #000;
+    color: #fff;
+    overflow: hidden;
+    user-select: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Fullscreen styles */
+body:-webkit-full-screen {
+    background: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body:-moz-full-screen {
+    background: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body:fullscreen {
+    background: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#gameContainer {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(45deg, #1a1a2e, #16213e);
+}
+
+#gameCanvas {
+    border: 3px solid #444;
+    background: #222;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+    border-radius: 8px;
+    position: relative;
+    z-index: 10;
+}
+
+/* Touch Controls */
+.touch-controls {
+    position: absolute;
+    bottom: 120px; /* Moved up more for better mobile visibility */
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+    z-index: 2600;
+}
+
+/* Small D-Pad toggle button (always-on-top helper) */
+.dpad-toggle {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    font-size: 18px;
+    line-height: 40px;
+    text-align: center;
+    z-index: 3200;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.dpad-toggle:hover {
+    background: rgba(0,0,0,0.75);
+}
+
+/* Always show touch controls for mobile support */
+.touch-controls {
+    display: flex;
+}
+
+/* Force show on all devices for better mobile support */
+@media (max-width: 768px) {
+    .touch-controls {
+        display: flex !important;
+        bottom: 140px; /* Even higher on small screens */
+    }
+}
+
+.dpad-container {
+    pointer-events: all;
+}
+
+.dpad {
+    display: grid;
+    grid-template-columns: 60px 60px 60px; /* Larger buttons for mobile */
+    grid-template-rows: 60px 60px 60px;
+    gap: 3px;
+    background: rgba(0, 0, 0, 0.8); /* More visible background */
+    border-radius: 12px;
+    padding: 10px;
+    border: 2px solid rgba(0, 255, 255, 0.5); /* Glowing border */
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.dpad-btn {
+    width: 60px; /* Larger for easier touch */
+    height: 60px;
+    border: none;
+    background: rgba(255, 255, 255, 0.3); /* More visible */
+    color: #fff;
+    font-size: 24px; /* Larger text */
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.1s;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8); /* Better visibility */
+}
+
+.dpad-btn:hover,
+.dpad-btn:active {
+    background: rgba(0, 255, 255, 0.5);
+    transform: scale(0.95);
+}
+
+.dpad-btn.up { grid-column: 2; grid-row: 1; }
+.dpad-btn.left { grid-column: 1; grid-row: 2; }
+.dpad-btn.center { 
+    grid-column: 2; 
+    grid-row: 2; 
+    background: rgba(255, 255, 255, 0.1);
+    cursor: default;
+}
+.dpad-btn.center:hover { 
+    background: rgba(255, 255, 255, 0.1);
+    transform: none;
+}
+.dpad-btn.right { grid-column: 3; grid-row: 2; }
+.dpad-btn.down { grid-column: 2; grid-row: 3; }
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: all;
+}
+
+.action-btn {
+    width: 90px; /* Larger for mobile */
+    height: 60px; /* Taller for easier touch */
+    border: none;
+    background: rgba(255, 0, 0, 0.8); /* More visible */
+    color: #fff;
+    font-size: 16px; /* Larger text */
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.1s;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+}
+
+.action-btn.hide {
+    background: rgba(0, 255, 0, 0.7);
+}
+
+.action-btn:hover,
+.action-btn:active {
+    transform: scale(0.95);
+    filter: brightness(1.2);
+}
+
+/* Screen Touch Areas */
+.screen-touch-controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2000;
+}
+
+.touch-zone {
+    position: absolute;
+    pointer-events: all;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    display: none; /* Hidden by default */
+    transition: background 0.1s;
+}
+
+.touch-zone.active {
+    background: rgba(0, 255, 255, 0.2);
+}
+
+/* Touch zones layout */
+.touch-move-left {
+    left: 0;
+    top: 20%;
+    width: 25%;
+    height: 60%;
+}
+
+.touch-move-right {
+    right: 0;
+    top: 20%;
+    width: 25%;
+    height: 60%;
+}
+
+.touch-move-up {
+    left: 25%;
+    top: 0;
+    width: 50%;
+    height: 25%;
+}
+
+.touch-move-down {
+    left: 25%;
+    bottom: 25%;
+    width: 50%;
+    height: 25%;
+}
+
+.touch-fire {
+    right: 5%;
+    bottom: 30%;
+    width: 20%;
+    height: 20%;
+    border-radius: 50%;
+}
+
+/* Show touch zones on mobile when enabled */
+@media (hover: none) and (pointer: coarse) {
+    .screen-touch-controls.enabled .touch-zone {
+        display: block;
+    }
+}
+
+/* Game UI */
+.game-ui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 2500;
+    pointer-events: none;
+}
+
+.player-info,
+.stage-info,
+.touch-toggle {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.touch-toggle {
+    display: none; /* Hidden by default */
+}
+
+/* Show touch toggle on mobile only */
+@media (hover: none) and (pointer: coarse) {
+    .touch-toggle {
+        display: block;
+    }
+}
+
+.touch-toggle-btn {
+    background: rgba(0, 255, 255, 0.3);
+    color: white;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.touch-toggle-btn:hover,
+.touch-toggle-btn.active {
+    background: rgba(0, 255, 255, 0.6);
+    transform: scale(1.05);
+}
+
+.player-info div,
+.stage-info div {
+    margin-bottom: 5px;
+}
+
+.player-info div:last-child,
+.stage-info div:last-child {
+    margin-bottom: 0;
+}
+
+/* Screens */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    backdrop-filter: blur(10px);
+}
+
+.screen.hidden {
+    display: none;
+}
+
+.screen h2 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #ff6b6b;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.screen p {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.screen button {
+    padding: 15px 30px;
+    font-size: 20px;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.screen button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #gameCanvas {
+        width: 95vw;
+        height: 60vh;
+    }
+    
+    .touch-controls {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+    }
+    
+    .dpad {
+        grid-template-columns: 40px 40px 40px;
+        grid-template-rows: 40px 40px 40px;
+    }
+    
+    .dpad-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .action-btn {
+        width: 70px;
+        height: 40px;
+        font-size: 12px;
+    }
+}
+
+/* Hide touch controls when gamepad is connected */
+.gamepad-connected .touch-controls {
+    display: none;
+}
+
+/* Animation for destroyed base */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+.base-destroyed {
+    animation: shake 0.5s ease-in-out infinite;
+}
+
+/* Bullet trail effect */
+@keyframes bulletTrail {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.5); }
+}
+
+.bullet-trail {
+    animation: bulletTrail 0.3s ease-out forwards;
+}
+
+/* Debug Controls */
+.debug-controls { position: fixed; top:10px; left:10px; background:rgba(0,40,0,0.9); border:1px solid #1aff1a; border-radius:8px; padding:12px 12px 14px; font-family:'Courier New',monospace; font-size:12px; color:#bfffbf; z-index:9000; display:block; max-width:340px; box-shadow:0 0 10px #0f0 inset,0 0 6px #0f0; pointer-events:auto; }
+.debug-controls input{ background:#001900; color:#bfffbf; border:1px solid #1aff1a; border-radius:4px; }
+
+.debug-section {
+    margin-bottom: 10px;
+}
+
+.debug-section h4 {
+    color: #ffff00;
+    margin-bottom: 5px;
+    font-size: 11px;
+}
+
+.debug-btn {
+    background: #003300;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin: 2px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    transition: all 0.2s;
+}
+
+.debug-select {
+    background: #003300;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin: 2px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    width: 100%;
+    transition: all 0.2s;
+}
+
+.debug-select:hover {
+    background: #004400;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.debug-select option {
+    background: #003300;
+    color: #00ff00;
+}
+
+/* Options Menu Styles */
+.options-menu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #00ff88;
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.options-header h3 {
+    color: #00ff88;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.options-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.option-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(0, 255, 136, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.option-item label {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.option-select {
+    background: #003300;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    min-width: 200px;
+}
+
+.option-select:hover {
+    background: #004400;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+}
+
+.options-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.option-btn {
+    background: linear-gradient(135deg, #00ff88 0%, #00cc66 100%);
+    color: #000000;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+}
+
+.option-btn:hover {
+    background: linear-gradient(135deg, #00cc66 0%, #00aa55 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+}
+
+.debug-btn:hover {
+    background: #00ff00;
+    color: #000000;
+    transform: scale(1.05);
+}
+
+.debug-btn:active {
+    transform: scale(0.95);
+}
+
+.enemy-btn {
+    min-width: 60px;
+}
+
+/* Show debug controls only during gameplay */
+.game-playing .debug-controls {
+    display: block;
+}
+
+/* Multiplayer Menu Styles */
+.multiplayer-menu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    border: 2px solid #00ff88;
+    border-radius: 15px;
+    padding: 25px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.multiplayer-menu.hidden {
+    display: none;
+}
+
+.mp-header h3 {
+    text-align: center;
+    color: #00ff88;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+}
+
+.mp-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.mp-btn {
+    padding: 12px 20px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: 2px solid;
+    border-radius: 8px;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.host-btn {
+    border-color: #00ff88;
+    color: #00ff88;
+}
+
+.host-btn:hover {
+    background: #00ff88;
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+}
+
+.join-section {
+    display: flex;
+    gap: 10px;
+}
+
+.room-input {
+    flex: 1;
+    padding: 12px;
+    font-size: 1.1em;
+    border: 2px solid #0088ff;
+    border-radius: 8px;
+    background: rgba(0, 136, 255, 0.1);
+    color: white;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.room-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9em;
+}
+
+.join-btn {
+    border-color: #0088ff;
+    color: #0088ff;
+    min-width: 120px;
+}
+
+.join-btn:hover {
+    background: #0088ff;
+    color: #000;
+    box-shadow: 0 0 15px rgba(0, 136, 255, 0.6);
+}
+
+.room-info {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.room-info.hidden {
+    display: none;
+}
+
+.room-code {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.room-code h4 {
+    color: #ffaa00;
+    font-size: 1.3em;
+    margin-bottom: 10px;
+}
+
+.room-code span {
+    background: rgba(255, 170, 0, 0.2);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 1.4em;
+    letter-spacing: 3px;
+}
+
+.copy-btn {
+    margin: 10px 0;
+    padding: 8px 16px;
+    background: #ffaa00;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.copy-btn:hover {
+    background: #ffcc00;
+    transform: scale(1.05);
+}
+
+.room-help {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9em;
+    margin-top: 8px;
+}
+
+.player-list {
+    margin-bottom: 20px;
+}
+
+.player-list h4 {
+    color: #00ffff;
+    margin-bottom: 10px;
+}
+
+.player-list ul {
+    list-style: none;
+    background: rgba(0, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 10px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.player-list li {
+    padding: 5px 10px;
+    margin: 2px 0;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-list .player-host {
+    background: rgba(255, 170, 0, 0.2);
+    border-left: 3px solid #ffaa00;
+}
+
+.room-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.start-btn {
+    flex: 1;
+    border-color: #ff4444;
+    color: #ff4444;
+}
+
+.start-btn:hover:not(:disabled) {
+    background: #ff4444;
+    color: #000;
+    z-index: 6000; /* above editors & canvas */
+    background: rgba(0, 40, 0, 0.85);
+    backdrop-filter: blur(3px);
+    padding: 12px 12px 14px 12px;
+    border: 1px solid #1aff1a;
+    border-radius: 8px;
+    box-shadow: 0 0 10px #0f0 inset, 0 0 6px #0f0;
+    pointer-events: auto;
+
+.debug-controls h4 { margin: 4px 0 6px; font-size: 13px; color:#9eff9e; }
+.debug-controls .debug-btn { display:inline-block; margin:2px 4px 4px 0; background:#053805; border:1px solid #1aff1a; color:#bfffbf; padding:4px 6px; cursor:pointer; border-radius:4px; }
+.debug-controls .debug-btn:hover{ background:#0b5510; color:#fff; }
+.debug-controls .debug-section{ margin-bottom:10px; }
+}
+
+.start-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.leave-btn {
+    border-color: #888;
+    color: #888;
+    min-width: 120px;
+}
+
+.leave-btn:hover {
+    background: #888;
+    color: #000;
+}
+
+.connection-status {
+    text-align: center;
+    margin-top: 15px;
+    padding: 8px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.connection-status.connected {
+    background: rgba(0, 255, 136, 0.2);
+    color: #00ff88;
+}
+
+.connection-status.connecting {
+    background: rgba(255, 170, 0, 0.2);
+    color: #ffaa00;
+}
+
+.connection-status.error {
+    background: rgba(255, 68, 68, 0.2);
+    color: #ff4444;
+}
+
+/* Utility classes */
+.hidden {
+    display: none !important;
+}
+
+.ui-hidden {
+    display: none !important;
+}
