@@ -4,6 +4,8 @@ class InputSystem {
         this.keys = {};
         this.previousKeys = {};
         this.touchControls = {};
+    // Drag joystick state
+    this.drag = { active: false, startX: 0, startY: 0, dx: 0, dy: 0, lastUpdate: 0 };
         this.players = [];
         
         // Pause functionality
@@ -34,6 +36,7 @@ class InputSystem {
         
         // Touch controls
         this.initTouchControls();
+    this.initDragMoveControls();
         
         // Gamepad events
         window.addEventListener('gamepadConnected', (e) => this.onGamepadConnected(e));
@@ -228,42 +231,56 @@ class InputSystem {
         const screenTouchControls = document.getElementById('screenTouchControls');
         if (!screenTouchControls) return;
 
-        const touchZones = screenTouchControls.querySelectorAll('.touch-zone');
-        touchZones.forEach(zone => {
-            const action = zone.dataset.action;
-            
-            // Touch events
-            zone.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                this.touchControls[action] = true;
-                zone.classList.add('active');
-            });
-            
-            zone.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                this.touchControls[action] = false;
-                zone.classList.remove('active');
-            });
-            
-            zone.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                this.touchControls[action] = false;
-                zone.classList.remove('active');
-            });
-            
-            // Mouse events for desktop testing
-            zone.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                this.touchControls[action] = true;
-                zone.classList.add('active');
-            });
-            
-            zone.addEventListener('mouseup', (e) => {
-                e.preventDefault();
-                this.touchControls[action] = false;
-                zone.classList.remove('active');
-            });
-        });
+        const fireZone = screenTouchControls.querySelector('.touch-zone.touch-fire');
+        if (fireZone) {
+            const setFire = (v) => { this.touchControls.fire = v; fireZone.classList.toggle('active', v); };
+            // Touch
+            fireZone.addEventListener('touchstart', (e) => { e.preventDefault(); setFire(true); });
+            fireZone.addEventListener('touchend', (e) => { e.preventDefault(); setFire(false); });
+            fireZone.addEventListener('touchcancel', (e) => { e.preventDefault(); setFire(false); });
+            // Mouse
+            fireZone.addEventListener('mousedown', (e) => { e.preventDefault(); setFire(true); });
+            window.addEventListener('mouseup', () => setFire(false));
+        }
+    }
+
+    initDragMoveControls() {
+        const dragArea = document.getElementById('dragMoveArea');
+        if (!dragArea) return;
+
+        const startDrag = (x, y) => {
+            this.drag.active = true;
+            this.drag.startX = x; this.drag.startY = y; this.drag.dx = 0; this.drag.dy = 0;
+        };
+        const updateDrag = (x, y) => {
+            if (!this.drag.active) return;
+            this.drag.dx = x - this.drag.startX;
+            this.drag.dy = y - this.drag.startY;
+            this.drag.lastUpdate = performance.now();
+        };
+        const endDrag = () => {
+            this.drag.active = false;
+            this.drag.dx = 0; this.drag.dy = 0;
+        };
+
+        // Touch events
+        dragArea.addEventListener('touchstart', (e) => {
+            if (!e.touches || e.touches.length === 0) return;
+            const t = e.touches[0];
+            startDrag(t.clientX, t.clientY);
+        }, { passive: true });
+        dragArea.addEventListener('touchmove', (e) => {
+            if (!e.touches || e.touches.length === 0) return;
+            const t = e.touches[0];
+            updateDrag(t.clientX, t.clientY);
+        }, { passive: true });
+        dragArea.addEventListener('touchend', () => endDrag());
+        dragArea.addEventListener('touchcancel', () => endDrag());
+
+        // Mouse events (desktop testing)
+        dragArea.addEventListener('mousedown', (e) => { e.preventDefault(); startDrag(e.clientX, e.clientY); });
+        window.addEventListener('mousemove', (e) => updateDrag(e.clientX, e.clientY));
+        window.addEventListener('mouseup', () => endDrag());
     }
 
     initTouchToggle() {
@@ -273,6 +290,16 @@ class InputSystem {
         if (!toggleBtn || !screenTouchControls) return;
 
         let screenTouchEnabled = false;
+
+        // Default ON for mobile (coarse pointer)
+        try {
+            if (window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+                screenTouchEnabled = true;
+                screenTouchControls.classList.add('enabled');
+                toggleBtn.classList.add('active');
+                toggleBtn.textContent = '📱 Screen ON';
+            }
+        } catch(_) {}
 
         toggleBtn.addEventListener('click', () => {
             screenTouchEnabled = !screenTouchEnabled;
@@ -361,10 +388,12 @@ class InputSystem {
         
         // Touch controls (only for player 0)
         if (playerIndex === 0) {
-            controls.up = controls.up || this.touchControls.up;
-            controls.down = controls.down || this.touchControls.down;
-            controls.left = controls.left || this.touchControls.left;
-            controls.right = controls.right || this.touchControls.right;
+            // Direction from drag
+            const dir = this.getDragDirection();
+            controls.up = controls.up || dir.up || this.touchControls.up;
+            controls.down = controls.down || dir.down || this.touchControls.down;
+            controls.left = controls.left || dir.left || this.touchControls.left;
+            controls.right = controls.right || dir.right || this.touchControls.right;
             controls.fire = controls.fire || this.touchControls.fire;
         }
         
@@ -385,6 +414,18 @@ class InputSystem {
         
         // Apply controls to player
         player.setControls(controls);
+    }
+
+    getDragDirection() {
+        const threshold = 18; // pixels before movement counts
+        let up=false, down=false, left=false, right=false;
+        if (this.drag.active) {
+            if (this.drag.dy < -threshold) up = true;
+            if (this.drag.dy > threshold) down = true;
+            if (this.drag.dx < -threshold) left = true;
+            if (this.drag.dx > threshold) right = true;
+        }
+        return { up, down, left, right };
     }
 
     getGamepadInput(playerIndex) {

@@ -23,6 +23,9 @@ class Game {
         this.nextPowerUpTime = performance.now() + this.powerUpIntervalMs;
     this.scaleY = 1;
     this.entityScale = 1; // uniform scale we can optionally use for sizes later
+    // Visual multipliers
+    this.bulletSizeMultiplier = 2.5; // make normal bullets much bigger (visual + hitbox)
+    this.missileSizeMultiplier = 1.2; // mild scale for missiles only
     this._levelScaledFlag = false; // guard to avoid double scaling
         
         // Game state
@@ -774,8 +777,8 @@ class Game {
             { x: 623, y: 424 }
         ];
         
-        // Create cars at each specified position
-        const size = 64 * this.entityScale;
+    // Create cars at each specified position (use small cars only)
+    const size = 32 * this.entityScale;
         carPositions.forEach((pos) => {
             const sx = this.sx(pos.x); const sy = this.sy(pos.y);
             const car = new Car(sx - size/2, sy - size/2, size, size);
@@ -3389,20 +3392,14 @@ class Game {
     }
 
     updateUIVisibility() {
-        // Don't update if UI is explicitly hidden via Shift+H
-        if (this.uiHidden) return;
-        
-        // Auto-hide touch controls if keyboard/controller is active
-        const touchControls = document.getElementById('touchControls');
-        const screenTouchControls = document.getElementById('screenTouchControls');
-        
-        if (this.keyboardControllerActive) {
-            if (touchControls) touchControls.style.display = 'none';
-            if (screenTouchControls) screenTouchControls.style.display = 'none';
-        } else {
-            if (touchControls) touchControls.style.display = '';
-            if (screenTouchControls) screenTouchControls.style.display = '';
-        }
+    // Keep HUD always visible unless explicitly hidden with Shift+H
+    if (this.uiHidden) return;
+    const touchControls = document.getElementById('touchControls');
+    const screenTouchControls = document.getElementById('screenTouchControls');
+    if (touchControls) touchControls.style.display = '';
+    if (screenTouchControls) screenTouchControls.style.display = '';
+    // Ensure the HUD has the right z-index
+    this.ensureHUDVisible();
     }
 
     detectKeyboardControllerUsage() {

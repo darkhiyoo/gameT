@@ -4,34 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Wildfire Tank Battle</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%2300bcd4'/%3E%3Ctext x='32' y='40' font-size='28' text-anchor='middle' fill='white'%3EW%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <div id="gameContainer">
     <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-    <!-- Touch Controls -->
+    <!-- Touch Controls (D-pad removed; keep only action button) -->
     <div id="touchControls" class="touch-controls">
-      <div class="dpad-container">
-        <div class="dpad">
-          <button class="dpad-btn up" data-action="up">↑</button>
-          <button class="dpad-btn left" data-action="left">←</button>
-          <button class="dpad-btn center"></button>
-          <button class="dpad-btn right" data-action="right">→</button>
-          <button class="dpad-btn down" data-action="down">↓</button>
-        </div>
-      </div>
       <div class="action-buttons">
         <button class="action-btn fire" data-action="fire">FIRE</button>
       </div>
     </div>
 
-    <!-- Screen Touch Controls -->
+    <!-- Screen Touch Controls: drag area + fire zone -->
     <div id="screenTouchControls" class="screen-touch-controls">
-      <div class="touch-zone touch-move-left" data-action="left"></div>
-      <div class="touch-zone touch-move-right" data-action="right"></div>
-      <div class="touch-zone touch-move-up" data-action="up"></div>
-      <div class="touch-zone touch-move-down" data-action="down"></div>
+      <div id="dragMoveArea" class="drag-move-area" aria-label="drag to move"></div>
       <div class="touch-zone touch-fire" data-action="fire"></div>
     </div>
 

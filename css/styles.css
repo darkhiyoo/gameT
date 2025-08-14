@@ -52,107 +52,29 @@ body:fullscreen {
     z-index: 10;
 }
 
-/* Touch Controls */
+/* Touch Controls: keep only action buttons */
 .touch-controls {
     position: absolute;
-    bottom: 120px; /* Moved up more for better mobile visibility */
-    left: 20px;
+    bottom: 20px;
     right: 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: flex-end;
     pointer-events: none;
     z-index: 2600;
 }
 
-/* Small D-Pad toggle button (always-on-top helper) */
-.dpad-toggle {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    background: rgba(0,0,0,0.6);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.3);
-    font-size: 18px;
-    line-height: 40px;
-    text-align: center;
-    z-index: 3200;
-    cursor: pointer;
-    pointer-events: auto;
-}
+/* Remove D-pad specific UI */
 
-.dpad-toggle:hover {
-    background: rgba(0,0,0,0.75);
-}
-
-/* Always show touch controls for mobile support */
-.touch-controls {
-    display: flex;
-}
+/* Always show action buttons on mobile */
+.touch-controls { display: flex; }
 
 /* Force show on all devices for better mobile support */
 @media (max-width: 768px) {
-    .touch-controls {
-        display: flex !important;
-        bottom: 140px; /* Even higher on small screens */
-    }
+    .touch-controls { display: flex !important; bottom: 20px; right: 20px; left: auto; }
 }
 
-.dpad-container {
-    pointer-events: all;
-}
-
-.dpad {
-    display: grid;
-    grid-template-columns: 60px 60px 60px; /* Larger buttons for mobile */
-    grid-template-rows: 60px 60px 60px;
-    gap: 3px;
-    background: rgba(0, 0, 0, 0.8); /* More visible background */
-    border-radius: 12px;
-    padding: 10px;
-    border: 2px solid rgba(0, 255, 255, 0.5); /* Glowing border */
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-}
-
-.dpad-btn {
-    width: 60px; /* Larger for easier touch */
-    height: 60px;
-    border: none;
-    background: rgba(255, 255, 255, 0.3); /* More visible */
-    color: #fff;
-    font-size: 24px; /* Larger text */
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.1s;
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8); /* Better visibility */
-}
-
-.dpad-btn:hover,
-.dpad-btn:active {
-    background: rgba(0, 255, 255, 0.5);
-    transform: scale(0.95);
-}
-
-.dpad-btn.up { grid-column: 2; grid-row: 1; }
-.dpad-btn.left { grid-column: 1; grid-row: 2; }
-.dpad-btn.center { 
-    grid-column: 2; 
-    grid-row: 2; 
-    background: rgba(255, 255, 255, 0.1);
-    cursor: default;
-}
-.dpad-btn.center:hover { 
-    background: rgba(255, 255, 255, 0.1);
-    transform: none;
-}
-.dpad-btn.right { grid-column: 3; grid-row: 2; }
-.dpad-btn.down { grid-column: 2; grid-row: 3; }
+/* D-pad removed */
 
 .action-buttons {
     display: flex;
@@ -204,7 +126,7 @@ body:fullscreen {
     pointer-events: all;
     background: rgba(255, 255, 255, 0.05);
     border: 1px dashed rgba(255, 255, 255, 0.2);
-    display: none; /* Hidden by default */
+    display: none; /* Hidden by default, shown on mobile */
     transition: background 0.1s;
 }
 
@@ -212,56 +134,43 @@ body:fullscreen {
     background: rgba(0, 255, 255, 0.2);
 }
 
-/* Touch zones layout */
-.touch-move-left {
+/* Drag move area: left 60% of screen for movement */
+.drag-move-area {
+    position: absolute;
     left: 0;
-    top: 20%;
-    width: 25%;
-    height: 60%;
-}
-
-.touch-move-right {
-    right: 0;
-    top: 20%;
-    width: 25%;
-    height: 60%;
-}
-
-.touch-move-up {
-    left: 25%;
     top: 0;
-    width: 50%;
-    height: 25%;
-}
-
-.touch-move-down {
-    left: 25%;
-    bottom: 25%;
-    width: 50%;
-    height: 25%;
+    width: 60%;
+    height: 100%;
+    pointer-events: all;
+    background: rgba(0, 255, 255, 0.05);
+    border: 1px dashed rgba(0, 255, 255, 0.15);
+    display: none; /* shown on mobile */
 }
 
 .touch-fire {
-    right: 5%;
-    bottom: 30%;
-    width: 20%;
-    height: 20%;
+    right: 4%;
+    bottom: 12%;
+    width: 18%;
+    height: 18%;
     border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255,0,0,0.35);
 }
 
 /* Show touch zones on mobile when enabled */
 @media (hover: none) and (pointer: coarse) {
-    .screen-touch-controls.enabled .touch-zone {
+    .screen-touch-controls.enabled .touch-zone,
+    .screen-touch-controls.enabled .drag-move-area {
         display: block;
     }
 }
 
 /* Game UI */
+/* HUD: corner aligned */
 .game-ui {
     position: absolute;
-    top: 20px;
-    left: 20px;
-    right: 20px;
+    top: 12px;
+    left: 12px;
+    right: 12px;
     display: flex;
     justify-content: space-between;
     z-index: 2500;
@@ -270,13 +179,7 @@ body:fullscreen {
 
 .player-info,
 .stage-info,
-.touch-toggle {
-    background: rgba(0, 0, 0, 0.8);
-    padding: 10px 15px;
-    border-radius: 8px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
+.touch-toggle { background: rgba(0, 0, 0, 0.75); padding: 6px 10px; border-radius: 6px; backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.25); font-size: 12px; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 
 .touch-toggle {
     display: none; /* Hidden by default */
@@ -367,30 +270,14 @@ body:fullscreen {
 /* Responsive Design */
 @media (max-width: 768px) {
     #gameCanvas {
-        width: 95vw;
-        height: 60vh;
+        width: 96vw;
+        height: 58vh;
     }
-    
-    .touch-controls {
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
-    }
-    
-    .dpad {
-        grid-template-columns: 40px 40px 40px;
-        grid-template-rows: 40px 40px 40px;
-    }
-    
-    .dpad-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 16px;
-    }
-    
+    .game-ui { top: 8px; left: 8px; right: 8px; }
+    .player-info, .stage-info, .touch-toggle { font-size: 11px; padding: 5px 8px; }
     .action-btn {
-        width: 70px;
-        height: 40px;
+        width: 68px;
+        height: 44px;
         font-size: 12px;
     }
 }

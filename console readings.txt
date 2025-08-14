@@ -1,131 +1,111 @@
- Game initialized with normal difficulty (AI: 2, Boss: 4)
- Menu option value: 1 should correspond to difficulty index
- FORCED menu option to value 1 (normal)
- Initializing Wildfire Tank Battle...
- [SCALE] Updated scale factors => scaleX=2.400 scaleY=1.800 entityScale=1.800
- Resolution applied: 1920 x 1080 (Full HD 1080p) [Borderless]
- Loading assets: 1%
- Loading assets: 3%
-/data/sprits/tankp4.png:1   Failed to load resource: the server responded with a status of 404 ()
-  Failed to load image: data/sprits/tankp4.png
-(anonymous) @ AssetLoader.js:23
- Loading assets: 4%
-/data/sprits/tankp7.png:1   Failed to load resource: the server responded with a status of 404 ()
-/data/sprits/tankp6.png:1   Failed to load resource: the server responded with a status of 404 ()
-/data/sprits/tankp8.png:1   Failed to load resource: the server responded with a status of 404 ()
-/data/sprits/tankp5.png:1   Failed to load resource: the server responded with a status of 404 ()
-  Failed to load image: data/sprits/tankp7.png
-(anonymous) @ AssetLoader.js:23
- Loading assets: 5%
-  Failed to load image: data/sprits/tankp6.png
-(anonymous) @ AssetLoader.js:23
- Loading assets: 6%
-  Failed to load image: data/sprits/tankp8.png
-(anonymous) @ AssetLoader.js:23
- Loading assets: 8%
-/data/powers/laser1.png:1   Failed to load resource: the server responded with a status of 404 ()
-laser-box.png:1   Failed to load resource: the server responded with a status of 404 ()
-laser2.png:1   Failed to load resource: the server responded with a status of 404 ()
-laser3.png:1   Failed to load resource: the server responded with a status of 404 ()
-AssetLoader.js:23  Failed to load image: data/sprits/tankp5.png
-(anonymous) @ AssetLoader.js:23
-Game.js:257 Loading assets: 9%
-laser-hit2.png:1   Failed to load resource: the server responded with a status of 404 ()
-laser-hit1.png:1   Failed to load resource: the server responded with a status of 404 ()
-laser-hit4.png:1   Failed to load resource: the server responded with a status of 404 ()
-laser-hit3.png:1   Failed to load resource: the server responded with a status of 404 ()
-AssetLoader.js:23  Failed to load image: data/powers/laser1.png
-(anonymous) @ AssetLoader.js:23
-Game.js:257 Loading assets: 10%
-Game.js:257 Loading assets: 12%
-Game.js:257 Loading assets: 13%
-AssetLoader.js:23  Failed to load image: data/powers/laser-box.png
-(anonymous) @ AssetLoader.js:23
-Game.js:257 Loading assets: 14%
-AssetLoader.js:23  Failed to load image: data/powers/laser2.png
-(anonymous) @ AssetLoader.js:23
-Game.js:257 Loading assets: 15%
-AssetLoader.js:23  Failed to load image: data/powers/laser3.png
-(anonymous) @ AssetLoader.js:23
-Game.js:257 Loading assets: 17%
-AssetLoader.js:23  Failed to load image: data/powers/laser-hit2.png
-(anonymous) @ AssetLoader.js:23
-Game.js:257 Loading assets: 18%
-AssetLoader.js:23  Failed to load image: data/powers/laser-hit1.png
-(anonymous) @ AssetLoader.js:23
-Game.js:257 Loading assets: 19%
-AssetLoader.js:23  Failed to load image: data/powers/laser-hit4.png
-(anonymous) @ AssetLoader.js:23
-Game.js:257 Loading assets: 21%
-AssetLoader.js:23  Failed to load image: data/powers/laser-hit3.png
-(anonymous) @ AssetLoader.js:23
-Game.js:257 Loading assets: 22%
-lasersound.mp3:1   Failed to load resource: the server responded with a status of 404 ()
-Game.js:257 Loading assets: 23%
-Game.js:257 Loading assets: 24%
-Game.js:257 Loading assets: 26%
-Game.js:257 Loading assets: 27%
-Game.js:257 Loading assets: 28%
-Game.js:257 Loading assets: 29%
-Game.js:257 Loading assets: 31%
-Game.js:257 Loading assets: 32%
-Game.js:257 Loading assets: 33%
-Game.js:257 Loading assets: 35%
-Game.js:257 Loading assets: 36%
-Game.js:257 Loading assets: 37%
-Game.js:257 Loading assets: 38%
-Game.js:257 Loading assets: 40%
-Game.js:257 Loading assets: 41%
-Game.js:257 Loading assets: 42%
-Game.js:257 Loading assets: 44%
-Game.js:257 Loading assets: 45%
-Game.js:257 Loading assets: 46%
-Game.js:257 Loading assets: 47%
-Game.js:257 Loading assets: 49%
-Game.js:257 Loading assets: 50%
-Game.js:257 Loading assets: 51%
-Game.js:257 Loading assets: 53%
-Game.js:257 Loading assets: 54%
-Game.js:257 Loading assets: 55%
-Game.js:257 Loading assets: 56%
-Game.js:257 Loading assets: 58%
-Game.js:257 Loading assets: 59%
-Game.js:257 Loading assets: 60%
-Game.js:257 Loading assets: 62%
-Game.js:257 Loading assets: 63%
-Game.js:257 Loading assets: 64%
-Game.js:257 Loading assets: 65%
-Game.js:257 Loading assets: 67%
-Game.js:257 Loading assets: 68%
-Game.js:257 Loading assets: 69%
-Game.js:257 Loading assets: 71%
-Game.js:257 Loading assets: 72%
-Game.js:257 Loading assets: 73%
-Game.js:257 Loading assets: 74%
-Game.js:257 Loading assets: 76%
-Game.js:257 Loading assets: 77%
-Game.js:257 Loading assets: 78%
-Game.js:257 Loading assets: 79%
-Game.js:257 Loading assets: 81%
-Game.js:257 Loading assets: 82%
-Game.js:257 Loading assets: 83%
-Game.js:257 Loading assets: 85%
-Game.js:257 Loading assets: 86%
-AssetLoader.js:82  Failed to load sound: data/sfx/lasersound.mp3
-(anonymous) @ AssetLoader.js:82
-Game.js:257 Loading assets: 87%
-Game.js:257 Loading assets: 88%
-Game.js:257 Loading assets: 90%
-Game.js:257 Loading assets: 91%
-Game.js:257 Loading assets: 92%
-Game.js:257 Loading assets: 94%
-Game.js:257 Loading assets: 95%
-Game.js:257 Loading assets: 96%
-Game.js:257 Loading assets: 97%
-Game.js:257 Loading assets: 99%
-Game.js:257 Loading assets: 100%
-Game.js:264 Assets loaded successfully
-Game.js:292 Starting menu...
+Game.js:53 Game initialized with normal difficulty (AI: 2, Boss: 4)
+Game.js:92 Menu option value: 1 should correspond to difficulty index
+Game.js:95 FORCED menu option to value 1 (normal)
+Game.js:242 Initializing Wildfire Tank Battle...
+Game.js:234 [SCALE] Updated scale factors => scaleX=2.400 scaleY=1.800 entityScale=1.800
+Game.js:3549 Resolution applied: 1920 x 1080 (Full HD 1080p) [Borderless]
+Game.js:259 Loading assets: 1%
+Game.js:259 Loading assets: 3%
+Game.js:259 Loading assets: 4%
+Game.js:259 Loading assets: 5%
+Game.js:259 Loading assets: 6%
+Game.js:259 Loading assets: 8%
+Game.js:259 Loading assets: 9%
+Game.js:259 Loading assets: 10%
+Game.js:259 Loading assets: 12%
+Game.js:259 Loading assets: 13%
+Game.js:259 Loading assets: 14%
+Game.js:259 Loading assets: 15%
+Game.js:259 Loading assets: 17%
+Game.js:259 Loading assets: 18%
+Game.js:259 Loading assets: 19%
+Game.js:259 Loading assets: 21%
+Game.js:259 Loading assets: 22%
+Game.js:259 Loading assets: 23%
+Game.js:259 Loading assets: 24%
+Game.js:259 Loading assets: 26%
+Game.js:259 Loading assets: 27%
+Game.js:259 Loading assets: 28%
+Game.js:259 Loading assets: 29%
+Game.js:259 Loading assets: 31%
+Game.js:259 Loading assets: 32%
+Game.js:259 Loading assets: 33%
+Game.js:259 Loading assets: 35%
+Game.js:259 Loading assets: 36%
+Game.js:259 Loading assets: 37%
+Game.js:259 Loading assets: 38%
+Game.js:259 Loading assets: 40%
+Game.js:259 Loading assets: 41%
+Game.js:259 Loading assets: 42%
+Game.js:259 Loading assets: 44%
+Game.js:259 Loading assets: 45%
+Game.js:259 Loading assets: 46%
+Game.js:259 Loading assets: 47%
+Game.js:259 Loading assets: 49%
+Game.js:259 Loading assets: 50%
+Game.js:259 Loading assets: 51%
+Game.js:259 Loading assets: 53%
+Game.js:259 Loading assets: 54%
+Game.js:259 Loading assets: 55%
+AssetLoader.js:89  Sound load timeout: data/sfx/canon.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 56%
+AssetLoader.js:89  Sound load timeout: data/sfx/explode.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 58%
+AssetLoader.js:89  Sound load timeout: data/sfx/rocket-sound.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 59%
+AssetLoader.js:89  Sound load timeout: data/sfx/flamethrower.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 60%
+AssetLoader.js:89  Sound load timeout: data/sfx/freezethrower.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 62%
+AssetLoader.js:89  Sound load timeout: data/sfx/lasersound.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 63%
+AssetLoader.js:89  Sound load timeout: data/sfx/music1.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 64%
+AssetLoader.js:89  Sound load timeout: data/sfx/music2.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 65%
+AssetLoader.js:89  Sound load timeout: data/sfx/bossfight1.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 67%
+AssetLoader.js:89  Sound load timeout: data/sfx/game-start.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 68%
+AssetLoader.js:89  Sound load timeout: data/sfx/game-intro.mp3
+(anonymous) @ AssetLoader.js:89
+Game.js:259 Loading assets: 69%
+Game.js:259 Loading assets: 71%
+Game.js:259 Loading assets: 72%
+Game.js:259 Loading assets: 73%
+Game.js:259 Loading assets: 74%
+Game.js:259 Loading assets: 76%
+Game.js:259 Loading assets: 77%
+Game.js:259 Loading assets: 78%
+Game.js:259 Loading assets: 79%
+Game.js:259 Loading assets: 81%
+Game.js:259 Loading assets: 82%
+Game.js:259 Loading assets: 83%
+Game.js:259 Loading assets: 85%
+Game.js:259 Loading assets: 86%
+Game.js:259 Loading assets: 87%
+Game.js:259 Loading assets: 88%
+Game.js:259 Loading assets: 90%
+Game.js:259 Loading assets: 91%
+Game.js:259 Loading assets: 92%
+Game.js:259 Loading assets: 94%
+Game.js:259 Loading assets: 95%
+Game.js:259 Loading assets: 96%
+Game.js:259 Loading assets: 97%
+Game.js:259 Loading assets: 99%
+Game.js:259 Loading assets: 100%
+Game.js:266 Assets loaded successfully
+Game.js:294 Starting menu...
 AssetLoader.js:219 All assets loaded successfully
 /favicon.ico:1   Failed to load resource: the server responded with a status of 404 ()
 [NEW] Explain Console errors by using Copilot in Edge: click
@@ -133,22 +113,49 @@ AssetLoader.js:219 All assets loaded successfully
          to explain an error. 
         Learn more
         Don't show again
-Game.js:299 Starting single player game...
-Game.js:379 Resetting game with normal difficulty
-Game.js:530 SPAWN: Stage 1, Killed 0/20, Enemies: 0/4
-Game.js:972 BEFORE difficulty: fast has 2 health, current difficulty: normal
-Game.js:988 AFTER difficulty: fast health 2 → 2 (normal: AI=2, Boss=4)
-Game.js:3452 Input method changed: Keyboard/Controller - Touch controls hidden
-Game.js:972 BEFORE difficulty: heavy has 3 health, current difficulty: normal
-Game.js:988 AFTER difficulty: heavy health 3 → 2 (normal: AI=2, Boss=4)
-Game.js:3452 Input method changed: Touch - Touch controls shown
-Game.js:530 SPAWN: Stage 1, Killed 0/20, Enemies: 2/4
-Game.js:972 BEFORE difficulty: heavy has 3 health, current difficulty: normal
-Game.js:988 AFTER difficulty: heavy health 3 → 2 (normal: AI=2, Boss=4)
-Game.js:3452 Input method changed: Keyboard/Controller - Touch controls hidden
-Game.js:3452 Input method changed: Touch - Touch controls shown
-Game.js:972 BEFORE difficulty: heavy has 3 health, current difficulty: normal
-Game.js:988 AFTER difficulty: heavy health 3 → 2 (normal: AI=2, Boss=4)
-Game.js:3452 Input method changed: Keyboard/Controller - Touch controls hidden
-Game.js:2755 Cleaned up 1 bullets, 0 remaining
-Game.js:3452 Input method changed: Touch - Touch controls shown
+Game.js:301 Starting single player game...
+Game.js:381 Resetting game with normal difficulty
+Game.js:791 Created 24 destructible cars (scaled size 115.2)
+Game.js:532 SPAWN: Stage 1, Killed 0/20, Enemies: 0/4
+Game.js:974 BEFORE difficulty: fast has 2 health, current difficulty: normal
+Game.js:990 AFTER difficulty: fast health 2 → 2 (normal: AI=2, Boss=4)
+Game.js:2757 Cleaned up 1 bullets, 0 remaining
+Game.js:974 BEFORE difficulty: basic has 2 health, current difficulty: normal
+Game.js:990 AFTER difficulty: basic health 2 → 2 (normal: AI=2, Boss=4)
+Game.js:532 SPAWN: Stage 1, Killed 0/20, Enemies: 2/4
+Game.js:974 BEFORE difficulty: basic has 2 health, current difficulty: normal
+Game.js:990 AFTER difficulty: basic health 2 → 2 (normal: AI=2, Boss=4)
+Game.js:3454 Input method changed: Keyboard/Controller - Touch controls hidden
+Game.js:3454 Input method changed: Touch - Touch controls shown
+Game.js:3454 Input method changed: Keyboard/Controller - Touch controls hidden
+Game.js:3454 Input method changed: Touch - Touch controls shown
+Game.js:974 BEFORE difficulty: fast has 2 health, current difficulty: normal
+Game.js:990 AFTER difficulty: fast health 2 → 2 (normal: AI=2, Boss=4)
+Game.js:3454 Input method changed: Keyboard/Controller - Touch controls hidden
+Game.js:3454 Input method changed: Touch - Touch controls shown
+Game.js:3454 Input method changed: Keyboard/Controller - Touch controls hidden
+Game.js:2757 Cleaned up 1 bullets, 0 remaining
+Game.js:3454 Input method changed: Touch - Touch controls shown
+Game.js:3454 Input method changed: Keyboard/Controller - Touch controls hidden
+ PowerUp loading sprite: laser-box, loaded: true
+ Sprite dimensions: 500x500
+ Spawned laser power-up at (1165.2916093230983, 412.5130685500226)
+ Player 0 died. Lives remaining: 3
+ Player 1 power-ups reset on death
+ Attempting to stop looping sound: laser_sound
+ Sound laser_sound was not in looping sounds
+ Input method changed: Touch - Touch controls shown
+ Cleaned up 1 bullets, 0 remaining
+ Input method changed: Keyboard/Controller - Touch controls hidden
+ Input method changed: Touch - Touch controls shown
+ Player 0 respawned with 3 lives remaining
+ fast taking 1 damage - Health BEFORE: 2/2
+ Created freeze hit effect using freeze5.png, size: 73.6px, duration: 300ms, alpha: 0.3
+ fast after damage - Health AFTER: 1/2, Alive: true
+ fast taking 1 damage - Health BEFORE: 1/2
+ Created freeze hit effect using freeze5.png, size: 73.6px, duration: 300ms, alpha: 0.3
+ fast after damage - Health AFTER: 0/2, Alive: false
+ Cleaned up 1 bullets, 0 remaining
+ Enemies killed: 1, Total killed: 1/20
+ BEFORE difficulty: basic has 2 health, current difficulty: normal
+ AFTER difficulty: basic health 2 → 2 (normal: AI=2, Boss=4)

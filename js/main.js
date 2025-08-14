@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 function setupGlobalEvents(){
-  let audioEnabled=false; const enableAudio=()=>{ if(!audioEnabled&&game&&game.soundManager){ audioEnabled=true; game.soundManager.playMusic('game_intro',0.5,true); document.removeEventListener('click',enableAudio); document.removeEventListener('touchstart',enableAudio); document.removeEventListener('keydown',enableAudio);} };
+  let audioEnabled=false; const enableAudio=()=>{ if(!audioEnabled&&game){ audioEnabled=true; if(game.soundManager){ game.soundManager.playMusic('game_intro',0.5,true);} try{ if(document && !document.fullscreenElement && game.toggleFullscreen){ game.toggleFullscreen(); } }catch(_){} document.removeEventListener('click',enableAudio); document.removeEventListener('touchstart',enableAudio); document.removeEventListener('keydown',enableAudio);} };
   document.addEventListener('click',enableAudio);
   document.addEventListener('touchstart',enableAudio);
   document.addEventListener('keydown',enableAudio);

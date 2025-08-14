@@ -1,7 +1,8 @@
 class Bullet extends Entity {
     constructor(x, y, direction, speed, damage, owner, bulletType = 'standard') {
         const scale = (window.game && window.game.entityScale) || 1;
-    super(x, y, 8 * scale, 8 * scale); // bigger base bullet
+    // Base bullet size (hitbox) – scaled further below for standard bullets
+    super(x, y, 8 * scale, 8 * scale);
         
         // Handle direction parameter - could be Vector2D or raw angle
         if (direction instanceof Vector2D) {
@@ -100,6 +101,9 @@ class Bullet extends Entity {
                 this.color = this.owner instanceof Player ? '#00ffff' : '#ff4444';
                 this.spriteName = this.owner instanceof Player ? 'bullet_normal' : 'bullet_enemy';
                 this.loadSprite();
+                // Enlarge standard bullet hitbox early using game multiplier
+                const mulHB = (window.game && typeof window.game.bulletSizeMultiplier === 'number') ? window.game.bulletSizeMultiplier : 1.0;
+                if (mulHB !== 1.0) { this.size.x = this.size.y = this.size.x * mulHB; }
                 break;
         }
     }
@@ -365,8 +369,8 @@ class Bullet extends Entity {
             } else if (this.bulletType === 'fireball') {
                 spriteSize = 20; // Make fireball bullets slightly bigger
             } else {
-                // Normal bullets - also scale using the same multiplier (affects both player and enemy standard bullets)
-                const mul = (this.game && typeof this.game.missileSizeMultiplier === 'number') ? this.game.missileSizeMultiplier : 1.0;
+                // Standard bullets: scale up strongly using bulletSizeMultiplier from Game
+                const mul = (this.game && typeof this.game.bulletSizeMultiplier === 'number') ? this.game.bulletSizeMultiplier : 1.0;
                 spriteSize = 16 * mul;
             }
             
