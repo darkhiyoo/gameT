@@ -49,7 +49,26 @@ animate();
 // Periodic power-up spawning hook & fullscreen UI fix for production too
 ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange'].forEach(ev=>{
   document.addEventListener(ev,()=>{
-    ['gameUI','touchControls'].forEach(id=>{const el=document.getElementById(id); if(el){ el.classList.remove('hidden'); el.style.display=''; el.style.visibility='visible'; el.style.opacity='1'; }});
+    // Ensure UI elements remain visible in fullscreen, especially on mobile
+    ['gameUI','touchControls'].forEach(id=>{
+      const el=document.getElementById(id); 
+      if(el){ 
+        el.classList.remove('hidden','ui-hidden'); 
+        el.style.display=''; 
+        el.style.visibility='visible'; 
+        el.style.opacity='1';
+        // Higher z-index in fullscreen to ensure visibility above canvas
+        el.style.zIndex = document.fullscreenElement ? '10000' : '';
+        // Ensure pointer events work
+        if(id === 'touchControls') {
+          el.style.pointerEvents = 'auto';
+        }
+      }
+    });
+    // Force update UI visibility if game is available
+    if(game && typeof game.updateUIVisibility === 'function') {
+      setTimeout(() => game.updateUIVisibility(), 100);
+    }
   });
 });
 const _origUpdateGameProd = Game.prototype.updateGame;
@@ -57,7 +76,28 @@ Game.prototype.updateGame = function(...a){ try{ this.updatePowerUpSpawning(perf
 
 // Ensure UI is always visible and apply display settings like F2+Enter
 function forceUiVisibleAndDisplayApply(){
-  ['gameUI','touchControls'].forEach(id=>{const el=document.getElementById(id); if(el){ el.classList.remove('hidden'); el.style.display=''; el.style.visibility='visible'; el.style.opacity='1'; }});
+  ['gameUI','touchControls'].forEach(id=>{
+    const el=document.getElementById(id); 
+    if(el){ 
+      el.classList.remove('hidden','ui-hidden'); 
+      el.style.display=''; 
+      el.style.visibility='visible'; 
+      el.style.opacity='1';
+      // Ensure touch controls work properly on mobile
+      if(id === 'touchControls') {
+        el.style.pointerEvents = 'auto';
+        // Remove any gamepad-connected class that might hide controls
+        const container = document.getElementById('gameContainer');
+        if(container) {
+          // On mobile devices, don't let gamepad detection hide touch controls
+          const isMobile = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+          if(isMobile) {
+            container.classList.remove('gamepad-connected');
+          }
+        }
+      }
+    }
+  });
   // Apply display once more on DOM ready (safety)
   try{ if(game && game.applyResolutionSettings){ game.applyResolutionSettings(); } }catch(_){}
 }

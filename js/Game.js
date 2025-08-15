@@ -3341,11 +3341,30 @@ class Game {
                 // Hide debug/multiplayer chrome; keep UI counters and touch toggle visible
                 const hideIds = ['debugControls','debugPanel','multiplayerMenu'];
                 hideIds.forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
-                // Ensure UI overlay and touch panels are above canvas
+                // Ensure UI overlay and touch panels are above canvas with highest z-index
                 const gameUI = document.getElementById('gameUI');
                 const touchControls = document.getElementById('touchControls');
-                if (gameUI) { gameUI.style.display=''; gameUI.style.zIndex='3000'; }
-                if (touchControls) { touchControls.style.display=''; touchControls.style.zIndex='3000'; }
+                if (gameUI) { 
+                    gameUI.style.display=''; 
+                    gameUI.style.zIndex='10000';
+                    gameUI.style.visibility='visible';
+                    gameUI.style.opacity='1';
+                }
+                if (touchControls) { 
+                    touchControls.style.display=''; 
+                    touchControls.style.zIndex='10000';
+                    touchControls.style.visibility='visible';
+                    touchControls.style.opacity='1';
+                    touchControls.style.pointerEvents='auto';
+                    // On mobile, ensure gamepad detection doesn't hide touch controls
+                    const isMobile = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+                    if (isMobile) {
+                        const container = document.getElementById('gameContainer');
+                        if (container) container.classList.remove('gamepad-connected');
+                    }
+                }
+                // Force update UI visibility
+                this.updateUIVisibility();
                 // Let auto-hide logic manage touch visibility
                 
                 console.log('Entered true fullscreen mode');
@@ -3424,20 +3443,33 @@ class Game {
         const hud = document.getElementById('gameUI');
         const touchControls = document.getElementById('touchControls');
         const inGameplay = this.gameState === 'playing';
+        const isFullscreen = !!document.fullscreenElement;
+        const isMobile = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+        
         if (hud){
             hud.classList.remove('hidden','ui-hidden');
             hud.style.display = inGameplay ? 'flex' : 'none';
             hud.style.visibility = inGameplay ? 'visible' : 'hidden';
             hud.style.opacity = inGameplay ? '1' : '0';
-            hud.style.zIndex = document.fullscreenElement ? '3000' : '2500';
+            hud.style.zIndex = isFullscreen ? '10000' : '2500';
         }
         if (touchControls){
-            touchControls.classList.remove('hidden');
-            touchControls.style.display = inGameplay ? '' : 'none';
-            touchControls.style.visibility = inGameplay ? 'visible' : 'hidden';
-            touchControls.style.opacity = inGameplay ? '1' : '0';
-            touchControls.style.pointerEvents = inGameplay ? 'auto' : 'none';
-            touchControls.style.zIndex = document.fullscreenElement ? '3000' : '2600';
+            touchControls.classList.remove('hidden','ui-hidden');
+            // Always show touch controls during gameplay, especially on mobile in fullscreen
+            const shouldShow = inGameplay && (!this.keyboardControllerActive || isMobile);
+            touchControls.style.display = shouldShow ? '' : 'none';
+            touchControls.style.visibility = shouldShow ? 'visible' : 'hidden';
+            touchControls.style.opacity = shouldShow ? '1' : '0';
+            touchControls.style.pointerEvents = shouldShow ? 'auto' : 'none';
+            touchControls.style.zIndex = isFullscreen ? '10000' : '2600';
+            
+            // On mobile in fullscreen, ensure touch controls are never hidden by gamepad detection
+            if (isMobile && isFullscreen && inGameplay) {
+                const container = document.getElementById('gameContainer');
+                if (container) {
+                    container.classList.remove('gamepad-connected');
+                }
+            }
         }
     }
 

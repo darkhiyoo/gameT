@@ -132,7 +132,12 @@ class GamepadManager {
         const touchControls = document.getElementById('touchControls');
         const gameContainer = document.getElementById('gameContainer');
         
-        if (this.connectedGamepads > 0) {
+        // Check if we're on a mobile device
+        const isMobile = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+        
+        // On mobile devices, always keep touch controls available even if gamepad connected
+        // On desktop, hide touch controls when gamepad is connected
+        if (this.connectedGamepads > 0 && !isMobile) {
             gameContainer.classList.add('gamepad-connected');
         } else {
             gameContainer.classList.remove('gamepad-connected');
