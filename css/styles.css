@@ -233,6 +233,16 @@ body:fullscreen {
     display: none;
 }
 
+/* On mobile devices, always show touch controls even if gamepad connected */
+@media (hover: none) and (pointer: coarse) {
+    .gamepad-connected .touch-controls {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+}
+
 /* Animation for destroyed base */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
