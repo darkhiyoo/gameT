@@ -679,6 +679,12 @@ class Game {
         this.powerUps.push(powerUp);
         this.renderSystem.addEntity(powerUp);
         this.collisionSystem.addEntity(powerUp);
+        
+        // Play spawn sound effect
+        if (this.soundManager) {
+            this.soundManager.playSound('powerup', 0.3); // Softer volume for spawn vs collection
+        }
+        
     console.log(`Spawned ${type} power-up at (${x}, ${y})`);
     }
     
@@ -1502,7 +1508,7 @@ class Game {
                 // Check which menu item was clicked
                 this.menuItems.forEach((item, index) => {
                     const itemY = 300 + index * 60;
-                    const itemHeight = 40;
+                    const itemHeight = 60; // Use full spacing for better touch accuracy
                     
                     if (y >= itemY - itemHeight/2 && y <= itemY + itemHeight/2) {
                         this.selectedMenuItem = index;

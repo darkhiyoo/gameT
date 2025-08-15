@@ -1,6 +1,6 @@
 class PowerUp extends Entity {
     constructor(x, y, type) {
-        super(x, y, 24, 24); // 24x24 power-up size
+        super(x, y, 40, 40); // 40x40 power-up size (increased from 24x24 for better visibility)
         
         this.type = type;
         this.spawnTime = Date.now();
