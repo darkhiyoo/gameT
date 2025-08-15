@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   game=new Game();
   setupGlobalEvents();
   setupResponsiveCanvas();
-  setupMobileFullscreenButton();
   forceUiVisibleAndDisplayApply();
+  tryAutoFullscreenOnMobile();
 });
 
 function setupGlobalEvents(){
@@ -62,21 +62,19 @@ function forceUiVisibleAndDisplayApply(){
   try{ if(game && game.applyResolutionSettings){ game.applyResolutionSettings(); } }catch(_){}
 }
 
-function setupMobileFullscreenButton(){
-  const btn=document.getElementById('mobileFsBtn');
-  if(!btn) return;
-  // Show on touch-first devices only
-  try{ if(window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches){ btn.style.display='block'; } }catch(_){ /* noop */ }
-  const toggle=()=>{
-    if(!game) return;
-    // If not in real fullscreen, request it; else toggle borderless mode
-    if(!document.fullscreenElement){
-      try{ game.toggleFullscreen && game.toggleFullscreen(); }catch(_){}
-    } else {
-      // Switch borderless flag and re-apply scaling
-      game.borderlessFullscreen = !game.borderlessFullscreen;
-      try{ game.applyResolutionSettings(); }catch(_){}
-    }
-  };
-  ['click','touchstart'].forEach(ev=>btn.addEventListener(ev,(e)=>{ e.preventDefault(); toggle(); }));
+// mobile fullscreen toggle removed per request
+
+// Auto-enter fullscreen and lock to portrait on touch devices
+function tryAutoFullscreenOnMobile(){
+  // Only on touch-first devices
+  let isTouch=false; try{ isTouch = window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches; }catch(_){ isTouch = ('ontouchstart' in window); }
+  if(!isTouch) return;
+  const goFs = ()=>{ try{ if(game && typeof game.toggleFullscreen==='function' && !document.fullscreenElement){ game.toggleFullscreen(); } }catch(_){} };
+  // Attempt shortly after load and again on first interaction (required by some browsers)
+  setTimeout(goFs, 250);
+  const once=()=>{ goFs(); document.removeEventListener('touchstart',once,{passive:false}); document.removeEventListener('click',once); };
+  document.addEventListener('touchstart',once,{passive:false});
+  document.addEventListener('click',once);
+  // Best-effort portrait lock
+  try{ if(screen.orientation && screen.orientation.lock){ screen.orientation.lock('portrait'); } }catch(_){ }
 }

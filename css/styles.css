@@ -72,7 +72,7 @@ body:fullscreen {
     grid-template-rows: auto auto auto;
     grid-template-columns: auto auto auto;
     gap: 6px;
-    margin: 0 0 8px 0;
+    margin: 0 0 28px 0; /* raise dpad by adding bigger bottom margin */
 }
 .dpad .up { grid-column: 2; }
 .dpad .down { grid-column: 2; grid-row: 3; }
@@ -90,7 +90,7 @@ body:fullscreen {
 .action-buttons {
     pointer-events: all;
     display: flex; flex-direction: column; gap: 8px;
-    margin: 0 8px 8px auto; /* bottom-right */
+    margin: 0 8px 24px auto; /* raise a bit from bottom-right */
 }
 
 .action-btn {

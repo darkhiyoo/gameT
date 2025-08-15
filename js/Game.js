@@ -180,6 +180,9 @@ class Game {
         this.borderlessFullscreen = true; // Borderless by default (common in modern games)
     this._borderlessResizeHandler = null; // track listener to avoid duplicates
     this._initialDisplayApplied = false; // guard to apply once after load
+        // Track last canvas size to safely reposition players on res changes
+        this._lastCanvasWidth = (this.canvas && this.canvas.width) || this.baseWidth;
+        this._lastCanvasHeight = (this.canvas && this.canvas.height) || this.baseHeight;
         this.optionsOpen = false;
         this.optionsSelection = 0; // Navigation index inside custom options overlay (F2)
         // Create options overlay & apply initial resolution soon after DOM updates
@@ -305,7 +308,7 @@ class Game {
         this.isRunning = true;
         this.lastFrameTime = performance.now();
         // No longer start independent loop - will be called from main.js
-    // Make sure UI is visible when menu shows
+    // Hide HUD/touch while in menu
     this.updateUIVisibility();
     }
 
@@ -1565,6 +1568,7 @@ class Game {
             case 'options':
                 this.gameState = 'options';
                 this.selectedOptionItem = 0;
+                this.updateUIVisibility();
                 break;
         }
     }
@@ -1588,6 +1592,7 @@ class Game {
         if (this.inputSystem.isEscapePressed()) {
             this.gameState = 'menu';
             this.selectedMenuItem = 0;
+            this.updateUIVisibility();
         }
     }
 
@@ -2807,8 +2812,9 @@ class Game {
 
     gameOver(reason = 'Game Over') {
         console.log('Game Over:', reason);
-        this.gameState = 'gameOver';
+    this.gameState = 'gameOver';
         this.updateDebugControlsVisibility();
+    this.updateUIVisibility();
         
         // Calculate final score
         this.gameScore = this.players.reduce((total, player) => total + player.score, 0);
@@ -3414,12 +3420,25 @@ class Game {
     }
 
     updateUIVisibility() {
-        // Force HUD and touch controls visible at all times in release
         if (this.uiHidden) return;
         const hud = document.getElementById('gameUI');
         const touchControls = document.getElementById('touchControls');
-        if (hud){ hud.classList.remove('hidden','ui-hidden'); hud.style.display='flex'; hud.style.visibility='visible'; hud.style.opacity='1'; hud.style.zIndex = document.fullscreenElement ? '3000' : '2500'; }
-        if (touchControls){ touchControls.classList.remove('hidden'); touchControls.style.display=''; touchControls.style.visibility='visible'; touchControls.style.opacity='1'; touchControls.style.zIndex = document.fullscreenElement ? '3000' : '2600'; }
+        const inGameplay = this.gameState === 'playing';
+        if (hud){
+            hud.classList.remove('hidden','ui-hidden');
+            hud.style.display = inGameplay ? 'flex' : 'none';
+            hud.style.visibility = inGameplay ? 'visible' : 'hidden';
+            hud.style.opacity = inGameplay ? '1' : '0';
+            hud.style.zIndex = document.fullscreenElement ? '3000' : '2500';
+        }
+        if (touchControls){
+            touchControls.classList.remove('hidden');
+            touchControls.style.display = inGameplay ? '' : 'none';
+            touchControls.style.visibility = inGameplay ? 'visible' : 'hidden';
+            touchControls.style.opacity = inGameplay ? '1' : '0';
+            touchControls.style.pointerEvents = inGameplay ? 'auto' : 'none';
+            touchControls.style.zIndex = document.fullscreenElement ? '3000' : '2600';
+        }
     }
 
     detectKeyboardControllerUsage() {
@@ -3525,7 +3544,9 @@ class Game {
     applyResolutionSettings() {
         const canvas = this.canvas;
         if (!canvas) return;
-        const res = this.availableResolutions[this.currentResolutionIndex];
+    const res = this.availableResolutions[this.currentResolutionIndex];
+    const prevW = canvas.width || this._lastCanvasWidth || this.baseWidth;
+    const prevH = canvas.height || this._lastCanvasHeight || this.baseHeight;
         // Logical resolution
         canvas.width = res.width;
         canvas.height = res.height;
@@ -3575,9 +3596,9 @@ class Game {
             }
         }
         console.log(`Resolution applied: ${res.label} ${this.borderlessFullscreen?'[Borderless]':''}`);
-        if (this.optionsOpen) this.refreshResolutionOptionsMenu();
-        // If game already has entities, re-layout the current stage to occupy full area
-        if (this.players && this.players.length) {
+    if (this.optionsOpen) this.refreshResolutionOptionsMenu();
+    // If game already has entities, re-layout the current stage to occupy full area
+    if (this.players && this.players.length && (prevW !== res.width || prevH !== res.height)) {
             console.log('[SCALE] Rebuilding current stage for new resolution');
             const preserveState = {
                 stage: this.stage,
@@ -3590,10 +3611,10 @@ class Game {
             this.renderSystem.clearEntities && this.renderSystem.clearEntities();
             // Re-add players at proportionally same relative position (keep their percent offset)
             this.players.forEach(p => {
-                const relX = p.x / (this.baseWidth); // relative to base logical size used previously
-                const relY = p.y / (this.baseHeight);
-                p.x = relX * this.canvas.width;
-                p.y = relY * this.canvas.height;
+        const relX = p.x / prevW;
+        const relY = p.y / prevH;
+        p.x = relX * res.width;
+        p.y = relY * res.height;
             });
             // Rebuild stage objects for current stage
             try { this.setupStage(preserveState.stage); } catch (e) { console.error('Relayout error', e); }
@@ -3602,6 +3623,9 @@ class Game {
             this.difficulty = preserveState.difficulty;
             if (this.spriteEditor) this.rebuildSpriteEditorEntitiesForStage();
         }
+    // Store new canvas size
+    this._lastCanvasWidth = res.width;
+    this._lastCanvasHeight = res.height;
     }
 
     // ================= Collision Editor (F9) =================
