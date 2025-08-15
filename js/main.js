@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   game=new Game();
   setupGlobalEvents();
   setupResponsiveCanvas();
+  setupMobileFullscreenButton();
+  forceUiVisibleAndDisplayApply();
 });
 
 function setupGlobalEvents(){
@@ -36,7 +38,7 @@ function setupUniversalTouchSupport(){
 }
 
 function setupResponsiveCanvas(){ const canvas=document.getElementById('gameCanvas'); const container=document.getElementById('gameContainer'); if(!canvas||!container) return; resizeCanvas(); window.addEventListener('resize',resizeCanvas); window.addEventListener('orientationchange',()=>setTimeout(resizeCanvas,100)); }
-function resizeCanvas(){ const canvas=document.getElementById('gameCanvas'); if(!canvas) return; const maxWidth=window.innerWidth*0.95; const maxHeight=window.innerHeight*0.85; const aspect=4/3; let w=maxWidth; let h=w/aspect; if(h>maxHeight){ h=maxHeight; w=h*aspect;} canvas.style.width=w+'px'; canvas.style.height=h+'px'; }
+function resizeCanvas(){ const canvas=document.getElementById('gameCanvas'); if(!canvas) return; const maxWidth=window.innerWidth*0.98; const maxHeight=window.innerHeight*0.8; const aspect=4/3; let w=maxWidth; let h=w/aspect; if(h>maxHeight){ h=maxHeight; w=h*aspect;} canvas.style.width=w+'px'; canvas.style.height=h+'px'; }
 
 window.getGame=()=>game;
 
@@ -46,7 +48,35 @@ function animate(){ requestAnimationFrame(animate); perf.update(); if(game&&game
 animate();
 // Periodic power-up spawning hook & fullscreen UI fix for production too
 ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange'].forEach(ev=>{
-  document.addEventListener(ev,()=>{['gameUI','touchControls','screenTouchControls'].forEach(id=>{const el=document.getElementById(id); if(el) el.classList.remove('hidden');});});
+  document.addEventListener(ev,()=>{
+    ['gameUI','touchControls'].forEach(id=>{const el=document.getElementById(id); if(el){ el.classList.remove('hidden'); el.style.display=''; el.style.visibility='visible'; el.style.opacity='1'; }});
+  });
 });
 const _origUpdateGameProd = Game.prototype.updateGame;
 Game.prototype.updateGame = function(...a){ try{ this.updatePowerUpSpawning(performance.now()); }catch(e){} return _origUpdateGameProd.apply(this,a); };
+
+// Ensure UI is always visible and apply display settings like F2+Enter
+function forceUiVisibleAndDisplayApply(){
+  ['gameUI','touchControls'].forEach(id=>{const el=document.getElementById(id); if(el){ el.classList.remove('hidden'); el.style.display=''; el.style.visibility='visible'; el.style.opacity='1'; }});
+  // Apply display once more on DOM ready (safety)
+  try{ if(game && game.applyResolutionSettings){ game.applyResolutionSettings(); } }catch(_){}
+}
+
+function setupMobileFullscreenButton(){
+  const btn=document.getElementById('mobileFsBtn');
+  if(!btn) return;
+  // Show on touch-first devices only
+  try{ if(window.matchMedia && window.matchMedia('(hover: none) and (pointer: coarse)').matches){ btn.style.display='block'; } }catch(_){ /* noop */ }
+  const toggle=()=>{
+    if(!game) return;
+    // If not in real fullscreen, request it; else toggle borderless mode
+    if(!document.fullscreenElement){
+      try{ game.toggleFullscreen && game.toggleFullscreen(); }catch(_){}
+    } else {
+      // Switch borderless flag and re-apply scaling
+      game.borderlessFullscreen = !game.borderlessFullscreen;
+      try{ game.applyResolutionSettings(); }catch(_){}
+    }
+  };
+  ['click','touchstart'].forEach(ev=>btn.addEventListener(ev,(e)=>{ e.preventDefault(); toggle(); }));
+}

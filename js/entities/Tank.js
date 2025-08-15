@@ -30,7 +30,8 @@ class Tank extends Entity {
         
         // Visual
         this.tankColor = '#00ff00';
-    this.barrelLength = 20 * ((window.game && window.game.entityScale) || 1);
+    // Barrel length determines spawn offset straight from exact center
+    this.barrelLength = (this.size.x * 0.6);
         this.trackMarks = [];
         this.maxTrackMarks = 20;
         
@@ -189,10 +190,10 @@ class Tank extends Entity {
         // Calculate bullet direction based on tank facing direction
         const bulletDirection = this.getDirectionVector(this.facing);
         
-        // Calculate bullet start position (from center in facing direction)
-        const center = this.getCenter();
-        const bulletOffset = bulletDirection.multiply(this.barrelLength);
-        const startPos = center.add(bulletOffset);
+    // Calculate bullet start position precisely from the tank center along barrel
+    const center = this.getCenter();
+    const bulletOffset = bulletDirection.multiply(this.barrelLength);
+    const startPos = new Vector2D(center.x + bulletOffset.x, center.y + bulletOffset.y);
         
         // Determine bullet type based on active power-ups
         let bulletType = 'standard';
@@ -219,7 +220,8 @@ class Tank extends Entity {
             speed: this.bulletSpeed,
             damage: this.bulletDamage,
             owner: this,
-            type: bulletType
+            type: bulletType,
+            spawnCentered: true
         };
     }
 

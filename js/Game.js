@@ -178,6 +178,8 @@ class Game {
         ];
         this.currentResolutionIndex = 2; // Default 1080p
         this.borderlessFullscreen = true; // Borderless by default (common in modern games)
+    this._borderlessResizeHandler = null; // track listener to avoid duplicates
+    this._initialDisplayApplied = false; // guard to apply once after load
         this.optionsOpen = false;
         this.optionsSelection = 0; // Navigation index inside custom options overlay (F2)
         // Create options overlay & apply initial resolution soon after DOM updates
@@ -277,6 +279,11 @@ class Game {
     // Go to menu after assets load and start update loop
     this.gameState = 'menu';
     this.startMenu();
+    // Auto-apply display settings once (equivalent to F2 + Enter)
+    if (!this._initialDisplayApplied) {
+        try { this.applyResolutionSettings(); } catch(e) { console.warn('Initial display apply failed', e); }
+        this._initialDisplayApplied = true;
+    }
     }
 
     setupSprites() {
@@ -298,6 +305,8 @@ class Game {
         this.isRunning = true;
         this.lastFrameTime = performance.now();
         // No longer start independent loop - will be called from main.js
+    // Make sure UI is visible when menu shows
+    this.updateUIVisibility();
     }
 
     startGame() {
@@ -329,6 +338,9 @@ class Game {
         // Game loop is already running from menu
         this.gameState = 'playing';
         this.updateDebugControlsVisibility();
+    // Re-apply display once game starts (safety) and show UI
+    try{ this.applyResolutionSettings(); }catch(_){ }
+    this.updateUIVisibility();
     }
 
     startLocalCoopGame(playerCount) {
@@ -350,6 +362,8 @@ class Game {
         // Game loop is already running from menu
         this.gameState = 'playing';
         this.updateDebugControlsVisibility();
+    try{ this.applyResolutionSettings(); }catch(_){ }
+    this.updateUIVisibility();
     }
 
     startMultiplayerGame(playerCount) {
@@ -371,6 +385,8 @@ class Game {
         // Game loop is already running from menu
         this.gameState = 'playing';
         this.updateDebugControlsVisibility();
+    try{ this.applyResolutionSettings(); }catch(_){ }
+    this.updateUIVisibility();
     }
 
     updateDebugControlsVisibility() {
@@ -1383,6 +1399,12 @@ class Game {
             }
         }
         
+        // If spawnCentered requested, shift bullet origin so sprite is centered
+        if (bulletData.spawnCentered) {
+            bullet.position.x -= bullet.size.x / 2;
+            bullet.position.y -= bullet.size.y / 2;
+        }
+
         this.bullets.push(bullet);
         this.renderSystem.addEntity(bullet);
         this.collisionSystem.addEntity(bullet);
@@ -2656,19 +2678,23 @@ class Game {
             enemyCountElement.textContent = `Defeated: ${this.totalEnemiesKilled}/${this.enemiesNeededToWin} | Remaining: ${remaining}`;
         }
 
-        // Ensure HUD is visible and layered correctly in all modes/resolutions
-        this.ensureHUDVisible();
+    // Ensure HUD is visible and layered correctly in all modes/resolutions
+    this.ensureHUDVisible();
     }
 
     ensureHUDVisible() {
         const hud = document.getElementById('gameUI');
         if (!hud) return;
-        hud.classList.remove('hidden', 'ui-hidden');
-        hud.style.display = '';
-        hud.style.visibility = 'visible';
-        hud.style.opacity = '1';
+    hud.classList.remove('hidden', 'ui-hidden');
+    hud.style.display = 'flex';
+    hud.style.visibility = 'visible';
+    hud.style.opacity = '1';
         // Keep above canvas; bump slightly higher in fullscreen
         hud.style.zIndex = document.fullscreenElement ? '3000' : '2500';
+    // Prevent accidental hiding by any other logic
+    if (hud.style.pointerEvents !== 'none') hud.style.pointerEvents = 'none';
+    const btn = document.getElementById('touchToggleBtn');
+    if (btn) btn.style.pointerEvents = 'auto';
     }
 
     cleanup() {
@@ -3211,7 +3237,7 @@ class Game {
             // Touch controls
             document.getElementById('touchControls'),
             document.querySelector('.touch-controls'),
-            document.getElementById('screenTouchControls'),
+            null,
             
             // Title and other elements
             document.querySelector('h1'),
@@ -3312,10 +3338,8 @@ class Game {
                 // Ensure UI overlay and touch panels are above canvas
                 const gameUI = document.getElementById('gameUI');
                 const touchControls = document.getElementById('touchControls');
-                const screenTouchControls = document.getElementById('screenTouchControls');
                 if (gameUI) { gameUI.style.display=''; gameUI.style.zIndex='3000'; }
                 if (touchControls) { touchControls.style.display=''; touchControls.style.zIndex='3000'; }
-                if (screenTouchControls) { screenTouchControls.style.display=''; screenTouchControls.style.zIndex='2900'; }
                 // Let auto-hide logic manage touch visibility
                 
                 console.log('Entered true fullscreen mode');
@@ -3368,10 +3392,8 @@ class Game {
                 // Reset elevated z-indexes
                 const gameUI = document.getElementById('gameUI');
                 const touchControls = document.getElementById('touchControls');
-                const screenTouchControls = document.getElementById('screenTouchControls');
                 if (gameUI) gameUI.style.zIndex='';
                 if (touchControls) touchControls.style.zIndex='';
-                if (screenTouchControls) screenTouchControls.style.zIndex='';
                 
                 // Restore touch controls and debug based on current settings
                 this.updateUIVisibility();
@@ -3392,14 +3414,12 @@ class Game {
     }
 
     updateUIVisibility() {
-    // Keep HUD always visible unless explicitly hidden with Shift+H
-    if (this.uiHidden) return;
-    const touchControls = document.getElementById('touchControls');
-    const screenTouchControls = document.getElementById('screenTouchControls');
-    if (touchControls) touchControls.style.display = '';
-    if (screenTouchControls) screenTouchControls.style.display = '';
-    // Ensure the HUD has the right z-index
-    this.ensureHUDVisible();
+        // Force HUD and touch controls visible at all times in release
+        if (this.uiHidden) return;
+        const hud = document.getElementById('gameUI');
+        const touchControls = document.getElementById('touchControls');
+        if (hud){ hud.classList.remove('hidden','ui-hidden'); hud.style.display='flex'; hud.style.visibility='visible'; hud.style.opacity='1'; hud.style.zIndex = document.fullscreenElement ? '3000' : '2500'; }
+        if (touchControls){ touchControls.classList.remove('hidden'); touchControls.style.display=''; touchControls.style.visibility='visible'; touchControls.style.opacity='1'; touchControls.style.zIndex = document.fullscreenElement ? '3000' : '2600'; }
     }
 
     detectKeyboardControllerUsage() {
@@ -3526,6 +3546,11 @@ class Game {
             canvas.style.boxShadow = 'none';
             canvas.style.background = 'black';
             canvas.style.transformOrigin = 'center center';
+            // Remove old handler if any to prevent duplicates
+            if (this._borderlessResizeHandler) {
+                window.removeEventListener('resize', this._borderlessResizeHandler);
+                this._borderlessResizeHandler = null;
+            }
             const resizeBorderless = () => {
                 const scale = Math.min(window.innerWidth / res.width, window.innerHeight / res.height);
                 canvas.style.transform = `translate(-50%, -50%) scale(${scale})`;
@@ -3533,7 +3558,8 @@ class Game {
                 canvas.style.height = res.height + 'px';
             };
             resizeBorderless();
-            window.addEventListener('resize', resizeBorderless);
+            this._borderlessResizeHandler = resizeBorderless;
+            window.addEventListener('resize', this._borderlessResizeHandler);
         } else {
             // Windowed fallback: center within container using original sizing
             canvas.style.position = '';
@@ -3542,6 +3568,11 @@ class Game {
             canvas.style.transform = '';
             canvas.style.width = res.width + 'px';
             canvas.style.height = res.height + 'px';
+            // Remove borderless resize listener if present
+            if (this._borderlessResizeHandler) {
+                window.removeEventListener('resize', this._borderlessResizeHandler);
+                this._borderlessResizeHandler = null;
+            }
         }
         console.log(`Resolution applied: ${res.label} ${this.borderlessFullscreen?'[Borderless]':''}`);
         if (this.optionsOpen) this.refreshResolutionOptionsMenu();
@@ -3951,7 +3982,7 @@ class Game {
     estimateSpriteSize(name){
         const scale = this.entityScale || 1;
         switch(name){
-            case 'car': return { w:80*scale, h:40*scale };
+            case 'car': return { w:32*scale, h:32*scale }; // keep car small if used in editor
             case 'wall_box': return { w:64*scale, h:64*scale };
             case 'wall_cup': return { w:48*scale, h:64*scale };
             case 'wall_barrel': return { w:48*scale, h:64*scale };
@@ -3973,6 +4004,8 @@ class Game {
         this.clearSpriteEditorEntities();
         const list = this.getSpritePlacementsForStage();
         list.forEach(p=>{
+            // In release, skip editor-placed 'car' sprites to avoid duplicate car types
+            if (p.sprite === 'car') return;
             if (p.collidable){
                 const wall = new Entity(p.x, p.y, p.width, p.height);
                 wall.collisionLayer='wall';

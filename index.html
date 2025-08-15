@@ -10,18 +10,20 @@
 <body>
   <div id="gameContainer">
     <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <!-- Start overlay removed per request -->
 
-    <!-- Touch Controls (D-pad removed; keep only action button) -->
+    <!-- Touch Controls: D-pad (bottom-left) + Fire (bottom-right) -->
     <div id="touchControls" class="touch-controls">
-      <div class="action-buttons">
-        <button class="action-btn fire" data-action="fire">FIRE</button>
+      <div class="dpad" aria-label="D-Pad">
+        <button class="dpad-btn up" data-action="up" aria-label="Up">▲</button>
+        <button class="dpad-btn left" data-action="left" aria-label="Left">◄</button>
+        <button class="dpad-btn center" data-action="center" aria-label="Center"></button>
+        <button class="dpad-btn right" data-action="right" aria-label="Right">►</button>
+        <button class="dpad-btn down" data-action="down" aria-label="Down">▼</button>
       </div>
-    </div>
-
-    <!-- Screen Touch Controls: drag area + fire zone -->
-    <div id="screenTouchControls" class="screen-touch-controls">
-      <div id="dragMoveArea" class="drag-move-area" aria-label="drag to move"></div>
-      <div class="touch-zone touch-fire" data-action="fire"></div>
+      <div class="action-buttons">
+        <button id="fireBtn" class="action-btn fire" data-action="fire">FIRE</button>
+      </div>
     </div>
 
     <!-- UI Overlay -->
@@ -30,14 +32,15 @@
         <div class="lives">Lives: <span id="lives">3</span></div>
         <div class="score">Score: <span id="score">0</span></div>
       </div>
-      <div class="stage-info">
+  <div class="stage-info">
         <div class="stage">Stage: <span id="stage">1</span></div>
         <div class="enemies">Enemies: <span id="enemyCount">1</span></div>
       </div>
-      <div class="touch-toggle">
-        <button id="touchToggleBtn" class="touch-toggle-btn">📱 Screen Touch</button>
-      </div>
+  <div class="touch-toggle" style="display:none"></div>
     </div>
+
+  <!-- Compact mobile toggle for fullscreen/borderless -->
+  <button id="mobileFsBtn" aria-label="Toggle fullscreen" title="Toggle fullscreen" style="position:fixed;right:10px;bottom:10px;z-index:3200;pointer-events:auto;background:rgba(0,0,0,0.5);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;padding:8px 10px;font-weight:700;font-size:12px;backdrop-filter:blur(6px);display:none;">⛶</button>
 
     <!-- Game Over Screen -->
     <div id="gameOverScreen" class="screen hidden">

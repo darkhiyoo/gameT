@@ -46,7 +46,7 @@ function animate(){ requestAnimationFrame(animate); perf.update(); if(game&&game
 animate();
 // Periodic power-up spawning hook & fullscreen UI fix for production too
 ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','MSFullscreenChange'].forEach(ev=>{
-  document.addEventListener(ev,()=>{['gameUI','touchControls','screenTouchControls'].forEach(id=>{const el=document.getElementById(id); if(el) el.classList.remove('hidden');});});
+  document.addEventListener(ev,()=>{['gameUI','touchControls'].forEach(id=>{const el=document.getElementById(id); if(el) el.classList.remove('hidden');});});
 });
 const _origUpdateGameProd = Game.prototype.updateGame;
 Game.prototype.updateGame = function(...a){ try{ this.updatePowerUpSpawning(performance.now()); }catch(e){} return _origUpdateGameProd.apply(this,a); };

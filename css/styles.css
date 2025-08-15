@@ -14,6 +14,8 @@ body {
     padding: 0;
 }
 
+/* Start overlay removed */
+
 /* Fullscreen styles */
 body:-webkit-full-screen {
     background: #000 !important;
@@ -52,52 +54,55 @@ body:fullscreen {
     z-index: 10;
 }
 
-/* Touch Controls: keep only action buttons */
+/* Touch Controls: D-pad bottom-left + Fire bottom-right */
 .touch-controls {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    inset: 0;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: flex-end;
     pointer-events: none;
     z-index: 2600;
+    padding: 12px;
 }
 
-/* Remove D-pad specific UI */
-
-/* Always show action buttons on mobile */
-.touch-controls { display: flex; }
-
-/* Force show on all devices for better mobile support */
-@media (max-width: 768px) {
-    .touch-controls { display: flex !important; bottom: 20px; right: 20px; left: auto; }
+.dpad { 
+    pointer-events: all;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    grid-template-columns: auto auto auto;
+    gap: 6px;
+    margin: 0 0 8px 0;
 }
+.dpad .up { grid-column: 2; }
+.dpad .down { grid-column: 2; grid-row: 3; }
+.dpad .left { grid-column: 1; grid-row: 2; }
+.dpad .right { grid-column: 3; grid-row: 2; }
+.dpad .center { grid-column: 2; grid-row: 2; visibility: hidden; }
 
-/* D-pad removed */
+.dpad-btn { 
+    width: 48px; height: 48px; border-radius: 8px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; font-weight: 700; font-size: 16px;
+}
 
 .action-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
     pointer-events: all;
+    display: flex; flex-direction: column; gap: 8px;
+    margin: 0 8px 8px auto; /* bottom-right */
 }
 
 .action-btn {
-    width: 90px; /* Larger for mobile */
-    height: 60px; /* Taller for easier touch */
+    width: 84px; height: 56px;
     border: none;
-    background: rgba(255, 0, 0, 0.8); /* More visible */
-    color: #fff;
-    font-size: 16px; /* Larger text */
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.1s;
+    background: rgba(255, 0, 0, 0.85);
+    color: #fff; font-size: 14px; font-weight: 800;
+    border-radius: 8px; cursor: pointer; transition: all .1s;
     backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    text-shadow: 0 0 5px rgba(0,0,0,.8);
+    box-shadow: 0 0 10px rgba(255,0,0,.35);
 }
 
 .action-btn.hide {
@@ -110,69 +115,16 @@ body:fullscreen {
     filter: brightness(1.2);
 }
 
-/* Screen Touch Areas */
-.screen-touch-controls {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 2000;
-}
-
-.touch-zone {
-    position: absolute;
-    pointer-events: all;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px dashed rgba(255, 255, 255, 0.2);
-    display: none; /* Hidden by default, shown on mobile */
-    transition: background 0.1s;
-}
-
-.touch-zone.active {
-    background: rgba(0, 255, 255, 0.2);
-}
-
-/* Drag move area: left 60% of screen for movement */
-.drag-move-area {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 60%;
-    height: 100%;
-    pointer-events: all;
-    background: rgba(0, 255, 255, 0.05);
-    border: 1px dashed rgba(0, 255, 255, 0.15);
-    display: none; /* shown on mobile */
-}
-
-.touch-fire {
-    right: 4%;
-    bottom: 12%;
-    width: 18%;
-    height: 18%;
-    border-radius: 50%;
-    box-shadow: 0 0 12px rgba(255,0,0,0.35);
-}
-
-/* Show touch zones on mobile when enabled */
-@media (hover: none) and (pointer: coarse) {
-    .screen-touch-controls.enabled .touch-zone,
-    .screen-touch-controls.enabled .drag-move-area {
-        display: block;
-    }
-}
+/* Remove screen-wide drag/zone touch controls */
+.screen-touch-controls { display: none; }
 
 /* Game UI */
 /* HUD: corner aligned */
 .game-ui {
     position: absolute;
-    top: 12px;
-    left: 12px;
-    right: 12px;
-    display: flex;
-    justify-content: space-between;
+    top: 10px; left: 10px; right: 10px;
+    display: flex; justify-content: space-between;
+    gap: 8px;
     z-index: 2500;
     pointer-events: none;
 }
@@ -269,17 +221,11 @@ body:fullscreen {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    #gameCanvas {
-        width: 96vw;
-        height: 58vh;
-    }
-    .game-ui { top: 8px; left: 8px; right: 8px; }
-    .player-info, .stage-info, .touch-toggle { font-size: 11px; padding: 5px 8px; }
-    .action-btn {
-        width: 68px;
-        height: 44px;
-        font-size: 12px;
-    }
+    #gameCanvas { width: 100vw; height: 70vh; }
+    .game-ui { top: 6px; left: 6px; right: 6px; gap: 6px; }
+    .player-info, .stage-info { font-size: 11px; padding: 4px 7px; }
+    .dpad-btn { width: 44px; height: 44px; }
+    .action-btn { width: 68px; height: 44px; font-size: 12px; }
 }
 
 /* Hide touch controls when gamepad is connected */
